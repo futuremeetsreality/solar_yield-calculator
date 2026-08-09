@@ -42,6 +42,7 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+PERIODS = ("hour", "day", "month", "year")
 
 
 @dataclass
@@ -72,8 +73,19 @@ class QuarterTotals:
     total_benefit_eur: float = 0.0
 
 
+@dataclass
+class PeriodTotals:
+    """Money totals for the active accounting period."""
+
+    start: str = ""
+    export_revenue_eur: float = 0.0
+    self_consumption_saving_eur: float = 0.0
+    grid_to_battery_cost_eur: float = 0.0
+    total_benefit_eur: float = 0.0
+
+
 class SolarYieldAccounting:
-    """Integrate source states into synchronized persistent quarter totals."""
+    """Integrate source states into synchronized persistent accounting totals."""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.hass = hass
@@ -84,6 +96,9 @@ class SolarYieldAccounting:
         self.live = LiveSnapshot()
         self.current = QuarterTotals()
         self.last = QuarterTotals()
+        self.periods: dict[str, PeriodTotals] = {
+            period: PeriodTotals() for period in PERIODS
+        }
         self._listeners: set[Callable[[], None]] = set()
         self._last_update: datetime | None = None
         self._last_grid_to_battery_raw: float | None = None
@@ -97,12 +112,17 @@ class SolarYieldAccounting:
             current = stored.get("current")
             if current:
                 self.current = QuarterTotals(**current)
+            stored_periods = stored.get("periods", {})
+            for period in PERIODS:
+                if stored_periods.get(period):
+                    self.periods[period] = PeriodTotals(**stored_periods[period])
 
         now = dt_util.now()
         current_start = self._quarter_start(now)
         if self.current.start != current_start.isoformat():
             self.current = self._new_quarter(current_start)
 
+        self._roll_periods(now)
         self._last_update = now
         self._last_grid_to_battery_raw = self._grid_to_battery_value()
         self.live = self._read_live_snapshot()
@@ -184,6 +204,7 @@ class SolarYieldAccounting:
             if cursor >= boundary:
                 self._finalize_current(boundary)
 
+        self._roll_periods(now)
         self._last_update = now
         self._last_grid_to_battery_raw = grid_raw_now
         self.live = self._read_live_snapshot()
@@ -218,15 +239,37 @@ class SolarYieldAccounting:
         )
 
     def _finalize_current(self, boundary: datetime) -> None:
-        """Close the current quarter and open the next one."""
+        """Close the current quarter and add it to active period totals."""
         self.current.end = boundary.isoformat()
         self.current.total_benefit_eur = (
             self.current.export_revenue_eur
             + self.current.self_consumption_saving_eur
             - self.current.grid_to_battery_cost_eur
         )
-        self.last = self._rounded(self.current)
+        self.last = self._rounded_quarter(self.current)
+        quarter_start = dt_util.parse_datetime(self.last.start) or boundary - timedelta(minutes=15)
+        self._add_quarter_to_periods(self.last, quarter_start)
         self.current = self._new_quarter(boundary)
+
+    def _add_quarter_to_periods(
+        self, quarter: QuarterTotals, quarter_start: datetime
+    ) -> None:
+        for period in PERIODS:
+            expected = self._period_start(period, quarter_start)
+            if self.periods[period].start != expected.isoformat():
+                self.periods[period] = PeriodTotals(start=expected.isoformat())
+            totals = self.periods[period]
+            totals.export_revenue_eur += quarter.export_revenue_eur
+            totals.self_consumption_saving_eur += quarter.self_consumption_saving_eur
+            totals.grid_to_battery_cost_eur += quarter.grid_to_battery_cost_eur
+            totals.total_benefit_eur += quarter.total_benefit_eur
+
+    def _roll_periods(self, now: datetime) -> None:
+        """Reset active period meters at their calendar boundaries."""
+        for period in PERIODS:
+            expected = self._period_start(period, now)
+            if self.periods[period].start != expected.isoformat():
+                self.periods[period] = PeriodTotals(start=expected.isoformat())
 
     def _new_quarter(self, start: datetime) -> QuarterTotals:
         return QuarterTotals(
@@ -319,18 +362,42 @@ class SolarYieldAccounting:
         return value.replace(minute=minute, second=0, microsecond=0)
 
     @staticmethod
-    def _rounded(value: QuarterTotals) -> QuarterTotals:
+    def _period_start(period: str, value: datetime) -> datetime:
+        if period == "hour":
+            return value.replace(minute=0, second=0, microsecond=0)
+        if period == "day":
+            return value.replace(hour=0, minute=0, second=0, microsecond=0)
+        if period == "month":
+            return value.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if period == "year":
+            return value.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        raise ValueError(f"Unsupported period: {period}")
+
+    @staticmethod
+    def _rounded_quarter(value: QuarterTotals) -> QuarterTotals:
         data = asdict(value)
         for key, item in data.items():
             if isinstance(item, float):
                 data[key] = round(item, 6)
         return QuarterTotals(**data)
 
+    @staticmethod
+    def _rounded_period(value: PeriodTotals) -> PeriodTotals:
+        data = asdict(value)
+        for key, item in data.items():
+            if isinstance(item, float):
+                data[key] = round(item, 6)
+        return PeriodTotals(**data)
+
     async def _async_save(self) -> None:
         await self.store.async_save(
             {
-                "current": asdict(self._rounded(self.current)),
-                "last": asdict(self._rounded(self.last)),
+                "current": asdict(self._rounded_quarter(self.current)),
+                "last": asdict(self._rounded_quarter(self.last)),
+                "periods": {
+                    period: asdict(self._rounded_period(totals))
+                    for period, totals in self.periods.items()
+                },
             }
         )
 

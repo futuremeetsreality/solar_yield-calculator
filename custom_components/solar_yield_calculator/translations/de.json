@@ -54,7 +54,23 @@
       "last_quarter_self_consumption_saving": {"name": "Eigenverbrauchsersparnis letztes Viertel"},
       "last_quarter_grid_to_battery_energy": {"name": "Netzladung Batterie letztes Viertel"},
       "last_quarter_grid_to_battery_cost": {"name": "Netzladekosten Batterie letztes Viertel"},
-      "last_quarter_total_benefit": {"name": "Gesamtnutzen letztes Viertel"}
+      "last_quarter_total_benefit": {"name": "Gesamtnutzen letztes Viertel"},
+      "hour_export_revenue": {"name": "Exporterlös Stunde"},
+      "hour_self_consumption_saving": {"name": "Eigenverbrauchsersparnis Stunde"},
+      "hour_grid_to_battery_cost": {"name": "Netzladekosten Batterie Stunde"},
+      "hour_total_benefit": {"name": "Gesamtnutzen Stunde"},
+      "day_export_revenue": {"name": "Exporterlös Tag"},
+      "day_self_consumption_saving": {"name": "Eigenverbrauchsersparnis Tag"},
+      "day_grid_to_battery_cost": {"name": "Netzladekosten Batterie Tag"},
+      "day_total_benefit": {"name": "Gesamtnutzen Tag"},
+      "month_export_revenue": {"name": "Exporterlös Monat"},
+      "month_self_consumption_saving": {"name": "Eigenverbrauchsersparnis Monat"},
+      "month_grid_to_battery_cost": {"name": "Netzladekosten Batterie Monat"},
+      "month_total_benefit": {"name": "Gesamtnutzen Monat"},
+      "year_export_revenue": {"name": "Exporterlös Jahr"},
+      "year_self_consumption_saving": {"name": "Eigenverbrauchsersparnis Jahr"},
+      "year_grid_to_battery_cost": {"name": "Netzladekosten Batterie Jahr"},
+      "year_total_benefit": {"name": "Gesamtnutzen Jahr"}
     }
   }
 }
