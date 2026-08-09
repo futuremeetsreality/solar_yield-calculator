@@ -4,18 +4,27 @@ Custom Home Assistant integration for transparent PV yield and savings calculati
 
 > Development status: **0.1.0-dev** — no public release yet.
 
-## Goals
+## Current 0.1.0 development scope
 
-- Configure source entities and tariff components in the Home Assistant UI.
-- Calculate export revenue from the active EPEX price.
-- Calculate avoided grid costs from PV/battery supplied house load.
-- Track grid-to-battery energy separately.
-- Provide transparent diagnostic entities so every result can be audited.
-- Add 15-minute, hourly, daily, monthly and yearly accounting in subsequent development steps.
+- UI based setup through Home Assistant Config Flow.
+- Source entity selection for house load, grid import/export, battery output, grid-to-battery energy and EPEX price.
+- Editable tariff values through the integration options dialog.
+- Gross grid price calculation.
+- Effective EPEX price calculation with selectable input unit and optional adjustment.
+- Live self-supplied house power, export revenue rate, self-consumption saving rate and combined benefit rate.
+- German and English UI translations.
 
-## Installation during development
+## Next development steps
 
-The repository is intended to be installable as a HACS custom repository once the integration scaffold is merged to `main`.
+- Persistent 15-minute accounting.
+- Hourly, daily, monthly and yearly totals.
+- Grid-to-battery cost accounting.
+- Auditable diagnostic entities and calculation attributes.
+- HACS/Hassfest validation workflows.
+
+## Development installation
+
+During development, install the repository as a HACS custom integration repository after the current development branch has been merged to `main`.
 
 ## Versioning
 

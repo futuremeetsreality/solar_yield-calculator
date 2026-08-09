@@ -1,0 +1,11 @@
+{
+  "domain": "solar_yield_calculator",
+  "name": "Solar Yield Calculator",
+  "codeowners": ["@futuremeetsreality"],
+  "config_flow": true,
+  "documentation": "https://github.com/futuremeetsreality/solar_yield-calculator",
+  "integration_type": "helper",
+  "iot_class": "calculated",
+  "requirements": [],
+  "version": "0.1.0"
+}
