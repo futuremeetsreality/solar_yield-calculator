@@ -1,0 +1,41 @@
+{
+  "title": "Solar Yield Calculator",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Solar Yield Calculator einrichten",
+        "description": "Wähle die Home-Assistant-Quellentitäten und trage die Tarifwerte für die Berechnung ein.",
+        "data": {
+          "house_load": "Hausverbrauch",
+          "grid_import_power": "Netzbezug Leistung",
+          "grid_export_power": "Netzeinspeisung Leistung",
+          "battery_output_power": "Batterieentladung Leistung",
+          "grid_to_battery_energy": "Netz zu Batterie Energie",
+          "epex_price": "Aktueller EPEX-Preis",
+          "epex_unit": "Einheit des EPEX-Preises",
+          "energy_price_net": "Strompreis netto (ct/kWh)",
+          "network_fee_net": "Netzentgelt netto (ct/kWh)",
+          "taxes_net": "Steuern und Abgaben netto (ct/kWh)",
+          "vat": "Mehrwertsteuer (%)",
+          "epex_adjustment": "EPEX Auf-/Abschlag (ct/kWh)"
+        }
+      }
+    },
+    "abort": {"single_instance_allowed": "Solar Yield Calculator kann nur einmal eingerichtet werden."}
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Tarifeinstellungen",
+        "description": "Tarifwerte ändern, ohne die Integration neu einzurichten.",
+        "data": {
+          "energy_price_net": "Strompreis netto (ct/kWh)",
+          "network_fee_net": "Netzentgelt netto (ct/kWh)",
+          "taxes_net": "Steuern und Abgaben netto (ct/kWh)",
+          "vat": "Mehrwertsteuer (%)",
+          "epex_adjustment": "EPEX Auf-/Abschlag (ct/kWh)"
+        }
+      }
+    }
+  }
+}

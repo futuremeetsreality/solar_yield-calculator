@@ -1,0 +1,29 @@
+"""Constants for Solar Yield Calculator."""
+
+DOMAIN = "solar_yield_calculator"
+VERSION = "0.1.0"
+
+CONF_HOUSE_LOAD = "house_load"
+CONF_GRID_IMPORT_POWER = "grid_import_power"
+CONF_GRID_EXPORT_POWER = "grid_export_power"
+CONF_BATTERY_OUTPUT_POWER = "battery_output_power"
+CONF_GRID_TO_BATTERY_ENERGY = "grid_to_battery_energy"
+CONF_EPEX_PRICE = "epex_price"
+CONF_EPEX_UNIT = "epex_unit"
+
+CONF_ENERGY_PRICE_NET = "energy_price_net"
+CONF_NETWORK_FEE_NET = "network_fee_net"
+CONF_TAXES_NET = "taxes_net"
+CONF_VAT = "vat"
+CONF_EPEX_ADJUSTMENT = "epex_adjustment"
+
+EPEX_UNIT_EUR_KWH = "EUR/kWh"
+EPEX_UNIT_CT_KWH = "ct/kWh"
+EPEX_UNIT_EUR_MWH = "EUR/MWh"
+EPEX_UNITS = (EPEX_UNIT_EUR_KWH, EPEX_UNIT_CT_KWH, EPEX_UNIT_EUR_MWH)
+
+DEFAULT_ENERGY_PRICE_NET = 15.0
+DEFAULT_NETWORK_FEE_NET = 10.0
+DEFAULT_TAXES_NET = 4.0
+DEFAULT_VAT = 20.0
+DEFAULT_EPEX_ADJUSTMENT = 0.0

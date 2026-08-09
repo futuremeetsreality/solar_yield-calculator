@@ -1,0 +1,41 @@
+{
+  "title": "Solar Yield Calculator",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure Solar Yield Calculator",
+        "description": "Select the Home Assistant source entities and enter the tariff values used for the calculation.",
+        "data": {
+          "house_load": "House load",
+          "grid_import_power": "Grid import power",
+          "grid_export_power": "Grid export power",
+          "battery_output_power": "Battery output power",
+          "grid_to_battery_energy": "Grid to battery energy",
+          "epex_price": "Current EPEX price",
+          "epex_unit": "EPEX price unit",
+          "energy_price_net": "Energy price net (ct/kWh)",
+          "network_fee_net": "Network fee net (ct/kWh)",
+          "taxes_net": "Taxes and charges net (ct/kWh)",
+          "vat": "VAT (%)",
+          "epex_adjustment": "EPEX adjustment (ct/kWh)"
+        }
+      }
+    },
+    "abort": {"single_instance_allowed": "Solar Yield Calculator can only be configured once."}
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Tariff settings",
+        "description": "Adjust tariff values without reinstalling the integration.",
+        "data": {
+          "energy_price_net": "Energy price net (ct/kWh)",
+          "network_fee_net": "Network fee net (ct/kWh)",
+          "taxes_net": "Taxes and charges net (ct/kWh)",
+          "vat": "VAT (%)",
+          "epex_adjustment": "EPEX adjustment (ct/kWh)"
+        }
+      }
+    }
+  }
+}
