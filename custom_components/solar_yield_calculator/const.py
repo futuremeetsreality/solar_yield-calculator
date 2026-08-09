@@ -1,7 +1,7 @@
 """Constants for Solar Yield Calculator."""
 
 DOMAIN = "solar_yield_calculator"
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 CONF_HOUSE_LOAD = "house_load"
 CONF_GRID_IMPORT_POWER = "grid_import_power"
@@ -32,3 +32,32 @@ DATA_ACCOUNTING = "accounting"
 STORAGE_VERSION = 1
 STORAGE_KEY_PREFIX = f"{DOMAIN}.accounting"
 ACCOUNTING_TICK_SECONDS = 60
+
+BASE_SENSOR_KEYS = (
+    "grid_price_gross",
+    "effective_epex_price",
+    "self_supply_power",
+    "export_revenue_rate",
+    "self_consumption_saving_rate",
+    "total_benefit_rate",
+    "last_quarter_export_energy",
+    "last_quarter_export_revenue",
+    "last_quarter_self_supply_energy",
+    "last_quarter_self_consumption_saving",
+    "last_quarter_grid_to_battery_energy",
+    "last_quarter_grid_to_battery_cost",
+    "last_quarter_total_benefit",
+)
+
+PERIOD_SENSOR_KEYS = tuple(
+    f"{period}_{metric}"
+    for period in ("hour", "day", "month", "year")
+    for metric in (
+        "export_revenue",
+        "self_consumption_saving",
+        "grid_to_battery_cost",
+        "total_benefit",
+    )
+)
+
+ENTITY_KEYS = BASE_SENSOR_KEYS + PERIOD_SENSOR_KEYS
