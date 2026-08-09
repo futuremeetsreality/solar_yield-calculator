@@ -54,7 +54,23 @@
       "last_quarter_self_consumption_saving": {"name": "Self consumption saving last quarter"},
       "last_quarter_grid_to_battery_energy": {"name": "Grid to battery energy last quarter"},
       "last_quarter_grid_to_battery_cost": {"name": "Grid to battery cost last quarter"},
-      "last_quarter_total_benefit": {"name": "Total benefit last quarter"}
+      "last_quarter_total_benefit": {"name": "Total benefit last quarter"},
+      "hour_export_revenue": {"name": "Export revenue hour"},
+      "hour_self_consumption_saving": {"name": "Self consumption saving hour"},
+      "hour_grid_to_battery_cost": {"name": "Grid to battery cost hour"},
+      "hour_total_benefit": {"name": "Total benefit hour"},
+      "day_export_revenue": {"name": "Export revenue day"},
+      "day_self_consumption_saving": {"name": "Self consumption saving day"},
+      "day_grid_to_battery_cost": {"name": "Grid to battery cost day"},
+      "day_total_benefit": {"name": "Total benefit day"},
+      "month_export_revenue": {"name": "Export revenue month"},
+      "month_self_consumption_saving": {"name": "Self consumption saving month"},
+      "month_grid_to_battery_cost": {"name": "Grid to battery cost month"},
+      "month_total_benefit": {"name": "Total benefit month"},
+      "year_export_revenue": {"name": "Export revenue year"},
+      "year_self_consumption_saving": {"name": "Self consumption saving year"},
+      "year_grid_to_battery_cost": {"name": "Grid to battery cost year"},
+      "year_total_benefit": {"name": "Total benefit year"}
     }
   }
 }
