@@ -2,9 +2,9 @@
 
 Custom Home Assistant integration for transparent PV yield and savings calculations.
 
-> Development status: **0.1.1-dev** — no public release yet.
+> Development status: **0.1.2-dev** — no public release yet.
 
-## Current 0.1.1 development scope
+## Current 0.1.2 development scope
 
 - UI based setup through Home Assistant Config Flow.
 - Source entity selection for house load, grid import/export, battery output, grid-to-battery energy and EPEX price.
@@ -15,24 +15,32 @@ Custom Home Assistant integration for transparent PV yield and savings calculati
 - 15-minute export energy and EPEX-based export revenue.
 - 15-minute self-supplied house energy and avoided gross grid cost.
 - Grid-to-battery energy is separated from house grid import in the settlement calculation and its gross charging cost is deducted from total benefit.
+- Current hour, day, month and year monetary totals for export revenue, self-consumption saving, grid-to-battery cost and total benefit.
+- Four-decimal monetary display precision for audit-friendly checking.
+- Interval and period timestamps exposed as entity attributes.
+- Stable technical entity IDs are migrated automatically from early development IDs.
+- Restart handling intentionally does not backfill unknown power or grid-to-battery movement while Home Assistant was offline.
 - German and English entity-name translations.
 
-## 15-minute accounting model
+## Accounting model
 
-For each settlement interval the integration integrates house load, grid import and grid export power. The selected `Grid to Battery Energy` counter is used to distinguish grid energy used to charge the battery from grid energy actually used by the house.
+For each 15-minute settlement interval the integration integrates house load, grid import and grid export power. The selected `Grid to Battery Energy` counter is used to distinguish grid energy used to charge the battery from grid energy actually used by the house.
 
 The resulting interval benefit is:
 
 `export revenue + self-consumption saving - grid-to-battery cost`
 
-The last completed interval is exposed as dedicated Home Assistant sensors and persisted across restarts.
+Completed 15-minute intervals are accumulated into the active calendar hour, day, month and year. Period sensors therefore represent completed settlement intervals only; the currently open quarter is added when it closes.
+
+## Restart behavior
+
+The active partial quarter and completed totals are persisted. On restart, accounting resumes from the current source states. Energy or power changes that happened while Home Assistant was offline are not guessed or backfilled, preventing false spikes.
 
 ## Next development steps
 
-- Hourly, daily, monthly and yearly totals.
-- Extended audit/diagnostic entities and calculation attributes.
 - HACS/Hassfest validation workflows.
-- Additional handling and diagnostics for unusual source units or unavailable source sensors.
+- Additional diagnostics for unusual source units or unavailable source sensors.
+- Optional historical settlement detail beyond the last completed quarter.
 
 ## Development installation
 
