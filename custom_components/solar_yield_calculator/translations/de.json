@@ -21,7 +21,9 @@
         }
       }
     },
-    "abort": {"single_instance_allowed": "Solar Yield Calculator kann nur einmal eingerichtet werden."}
+    "abort": {
+      "single_instance_allowed": "Solar Yield Calculator kann nur einmal eingerichtet werden."
+    }
   },
   "options": {
     "step": {
@@ -36,6 +38,23 @@
           "epex_adjustment": "EPEX Auf-/Abschlag (ct/kWh)"
         }
       }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "grid_price_gross": {"name": "Bezugspreis brutto"},
+      "effective_epex_price": {"name": "Effektiver EPEX-Preis"},
+      "self_supply_power": {"name": "Eigenversorgte Hausleistung"},
+      "export_revenue_rate": {"name": "Exporterlös aktuell"},
+      "self_consumption_saving_rate": {"name": "Eigenverbrauchsersparnis aktuell"},
+      "total_benefit_rate": {"name": "Gesamtnutzen aktuell"},
+      "last_quarter_export_energy": {"name": "Exportenergie letztes Viertel"},
+      "last_quarter_export_revenue": {"name": "Exporterlös letztes Viertel"},
+      "last_quarter_self_supply_energy": {"name": "Eigenversorgung letztes Viertel"},
+      "last_quarter_self_consumption_saving": {"name": "Eigenverbrauchsersparnis letztes Viertel"},
+      "last_quarter_grid_to_battery_energy": {"name": "Netzladung Batterie letztes Viertel"},
+      "last_quarter_grid_to_battery_cost": {"name": "Netzladekosten Batterie letztes Viertel"},
+      "last_quarter_total_benefit": {"name": "Gesamtnutzen letztes Viertel"}
     }
   }
 }

@@ -1,7 +1,7 @@
 """Constants for Solar Yield Calculator."""
 
 DOMAIN = "solar_yield_calculator"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 CONF_HOUSE_LOAD = "house_load"
 CONF_GRID_IMPORT_POWER = "grid_import_power"
@@ -27,3 +27,8 @@ DEFAULT_NETWORK_FEE_NET = 10.0
 DEFAULT_TAXES_NET = 4.0
 DEFAULT_VAT = 20.0
 DEFAULT_EPEX_ADJUSTMENT = 0.0
+
+DATA_ACCOUNTING = "accounting"
+STORAGE_VERSION = 1
+STORAGE_KEY_PREFIX = f"{DOMAIN}.accounting"
+ACCOUNTING_TICK_SECONDS = 60

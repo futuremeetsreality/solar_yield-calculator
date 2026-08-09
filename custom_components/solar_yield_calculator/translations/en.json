@@ -3,13 +3,13 @@
   "config": {
     "step": {
       "user": {
-        "title": "Configure Solar Yield Calculator",
+        "title": "Set up Solar Yield Calculator",
         "description": "Select the Home Assistant source entities and enter the tariff values used for the calculation.",
         "data": {
           "house_load": "House load",
           "grid_import_power": "Grid import power",
           "grid_export_power": "Grid export power",
-          "battery_output_power": "Battery output power",
+          "battery_output_power": "Battery discharge power",
           "grid_to_battery_energy": "Grid to battery energy",
           "epex_price": "Current EPEX price",
           "epex_unit": "EPEX price unit",
@@ -21,13 +21,15 @@
         }
       }
     },
-    "abort": {"single_instance_allowed": "Solar Yield Calculator can only be configured once."}
+    "abort": {
+      "single_instance_allowed": "Solar Yield Calculator can only be configured once."
+    }
   },
   "options": {
     "step": {
       "init": {
         "title": "Tariff settings",
-        "description": "Adjust tariff values without reinstalling the integration.",
+        "description": "Change tariff values without setting up the integration again.",
         "data": {
           "energy_price_net": "Energy price net (ct/kWh)",
           "network_fee_net": "Network fee net (ct/kWh)",
@@ -36,6 +38,23 @@
           "epex_adjustment": "EPEX adjustment (ct/kWh)"
         }
       }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "grid_price_gross": {"name": "Grid price gross"},
+      "effective_epex_price": {"name": "Effective EPEX price"},
+      "self_supply_power": {"name": "Self supplied house power"},
+      "export_revenue_rate": {"name": "Export revenue rate"},
+      "self_consumption_saving_rate": {"name": "Self consumption saving rate"},
+      "total_benefit_rate": {"name": "Total benefit rate"},
+      "last_quarter_export_energy": {"name": "Export energy last quarter"},
+      "last_quarter_export_revenue": {"name": "Export revenue last quarter"},
+      "last_quarter_self_supply_energy": {"name": "Self supply energy last quarter"},
+      "last_quarter_self_consumption_saving": {"name": "Self consumption saving last quarter"},
+      "last_quarter_grid_to_battery_energy": {"name": "Grid to battery energy last quarter"},
+      "last_quarter_grid_to_battery_cost": {"name": "Grid to battery cost last quarter"},
+      "last_quarter_total_benefit": {"name": "Total benefit last quarter"}
     }
   }
 }
