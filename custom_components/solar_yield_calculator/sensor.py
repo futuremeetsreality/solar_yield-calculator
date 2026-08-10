@@ -70,6 +70,7 @@ def _period_value(period: str, field: str) -> Callable[[SolarYieldAccounting], f
 SENSORS: tuple[YieldSensorDescription, ...] = (
     YieldSensorDescription(key="grid_price_gross", native_unit="EUR/kWh", icon="mdi:cash", value_fn=lambda a: a.live.grid_price_eur_kwh, suggested_display_precision=4),
     YieldSensorDescription(key="effective_epex_price", native_unit="EUR/kWh", icon="mdi:chart-line", value_fn=lambda a: a.live.epex_eur_kwh, suggested_display_precision=5),
+    YieldSensorDescription(key="effective_energy_price_net", native_unit="EUR/kWh", icon="mdi:cash-sync", value_fn=lambda a: a.live.energy_price_net_eur_kwh, suggested_display_precision=5),
     YieldSensorDescription(key="self_supply_power", native_unit=UnitOfPower.KILO_WATT, icon="mdi:home-lightning-bolt", value_fn=_live_self_supply, device_class=SensorDeviceClass.POWER, suggested_display_precision=3),
     YieldSensorDescription(key="export_revenue_rate", native_unit="EUR/h", icon="mdi:cash-plus", value_fn=_live_export_rate, suggested_display_precision=4),
     YieldSensorDescription(key="self_consumption_saving_rate", native_unit="EUR/h", icon="mdi:home-currency-eur", value_fn=_live_saving_rate, suggested_display_precision=4),
