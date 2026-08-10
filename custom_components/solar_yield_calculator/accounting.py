@@ -176,12 +176,12 @@ class SolarYieldAccounting:
         await self.async_update()
 
     async def _async_tick(self, now: datetime) -> None:
-        """Periodic safety tick so unchanged states still accrue energy."""
-        await self.async_update(now)
+        """Periodic safety tick; Home Assistant supplies this timestamp in UTC."""
+        await self.async_update(dt_util.as_local(now))
 
     async def async_update(self, now: datetime | None = None) -> None:
         """Integrate elapsed time, roll quarter boundaries and publish a snapshot."""
-        now = now or dt_util.now()
+        now = dt_util.now() if now is None else dt_util.as_local(now)
         if self._last_update is None:
             self._last_update = now
             self.live = self._read_live_snapshot()
@@ -242,6 +242,7 @@ class SolarYieldAccounting:
 
     def _finalize_current(self, boundary: datetime) -> None:
         """Close the current quarter and add it to active period totals."""
+        boundary = dt_util.as_local(boundary)
         self.current.end = boundary.isoformat()
         self.current.total_benefit_eur = (
             self.current.export_revenue_eur
@@ -249,7 +250,10 @@ class SolarYieldAccounting:
             - self.current.grid_to_battery_cost_eur
         )
         self.last = self._rounded_quarter(self.current)
-        quarter_start = dt_util.parse_datetime(self.last.start) or boundary - timedelta(minutes=15)
+        quarter_start = dt_util.parse_datetime(self.last.start)
+        if quarter_start is None:
+            quarter_start = boundary - timedelta(minutes=15)
+        quarter_start = dt_util.as_local(quarter_start)
         self._add_quarter_to_periods(self.last, quarter_start)
         self.current = self._new_quarter(boundary)
 
@@ -260,6 +264,7 @@ class SolarYieldAccounting:
         if not quarter.start:
             return
 
+        quarter_start = dt_util.as_local(quarter_start)
         for period in PERIODS:
             expected = self._period_start(period, quarter_start)
             if self.periods[period].start != expected.isoformat():
@@ -276,20 +281,15 @@ class SolarYieldAccounting:
             totals.last_interval_start = quarter.start
 
     def _bootstrap_periods_from_last(self, now: datetime) -> None:
-        """Seed empty 0.1.2 period meters from the persisted last quarter once.
-
-        Version 0.1.2 introduced period meters after quarter persistence already
-        existed. Immediately after upgrading, the last-quarter sensors could
-        therefore contain a valid settlement while all period meters were zero.
-        Only empty active periods are seeded, so existing non-zero totals are
-        never duplicated.
-        """
+        """Seed empty active periods from the persisted last completed quarter."""
         if not self.last.start:
             return
 
         quarter_start = dt_util.parse_datetime(self.last.start)
         if quarter_start is None:
             return
+        quarter_start = dt_util.as_local(quarter_start)
+        now = dt_util.as_local(now)
 
         for period in PERIODS:
             quarter_period_start = self._period_start(period, quarter_start)
@@ -325,13 +325,15 @@ class SolarYieldAccounting:
         )
 
     def _roll_periods(self, now: datetime) -> None:
-        """Reset active period meters at their calendar boundaries."""
+        """Reset active period meters only at local calendar boundaries."""
+        now = dt_util.as_local(now)
         for period in PERIODS:
             expected = self._period_start(period, now)
             if self.periods[period].start != expected.isoformat():
                 self.periods[period] = PeriodTotals(start=expected.isoformat())
 
     def _new_quarter(self, start: datetime) -> QuarterTotals:
+        start = dt_util.as_local(start)
         return QuarterTotals(
             start=start.isoformat(),
             end=(start + timedelta(minutes=15)).isoformat(),
@@ -418,11 +420,13 @@ class SolarYieldAccounting:
 
     @staticmethod
     def _quarter_start(value: datetime) -> datetime:
+        value = dt_util.as_local(value)
         minute = (value.minute // 15) * 15
         return value.replace(minute=minute, second=0, microsecond=0)
 
     @staticmethod
     def _period_start(period: str, value: datetime) -> datetime:
+        value = dt_util.as_local(value)
         if period == "hour":
             return value.replace(minute=0, second=0, microsecond=0)
         if period == "day":
