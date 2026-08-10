@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Set up Solar Yield Calculator",
-        "description": "Select the Home Assistant source entities and enter the tariff values used for the calculation.",
+        "description": "Select the Home Assistant source entities and enter the tariff values used for the calculation. A net energy price entity takes precedence over the manual value.",
         "data": {
           "house_load": "House load",
           "grid_import_power": "Grid import power",
@@ -13,7 +13,8 @@
           "grid_to_battery_energy": "Grid to battery energy",
           "epex_price": "Current EPEX price",
           "epex_unit": "EPEX price unit",
-          "energy_price_net": "Energy price net (ct/kWh)",
+          "energy_price_net_entity": "Net energy price entity (optional)",
+          "energy_price_net": "Manual net energy price / fallback (ct/kWh)",
           "network_fee_net": "Network fee net (ct/kWh)",
           "taxes_net": "Taxes and charges net (ct/kWh)",
           "vat": "VAT (%)",
@@ -29,9 +30,10 @@
     "step": {
       "init": {
         "title": "Tariff settings",
-        "description": "Change tariff values without setting up the integration again.",
+        "description": "Change tariff values. When a net energy price entity is selected it is used automatically; the manual value remains the fallback.",
         "data": {
-          "energy_price_net": "Energy price net (ct/kWh)",
+          "energy_price_net_entity": "Net energy price entity (optional)",
+          "energy_price_net": "Manual net energy price / fallback (ct/kWh)",
           "network_fee_net": "Network fee net (ct/kWh)",
           "taxes_net": "Taxes and charges net (ct/kWh)",
           "vat": "VAT (%)",
@@ -44,6 +46,7 @@
     "sensor": {
       "grid_price_gross": {"name": "Grid price gross"},
       "effective_epex_price": {"name": "Effective EPEX price"},
+      "effective_energy_price_net": {"name": "Effective net energy price"},
       "self_supply_power": {"name": "Self supplied house power"},
       "export_revenue_rate": {"name": "Export revenue rate"},
       "self_consumption_saving_rate": {"name": "Self consumption saving rate"},
