@@ -15,6 +15,20 @@ def gross_grid_price_eur_kwh(
     return gross_ct / 100.0
 
 
+def normalize_energy_price_net_ct(value: float, unit: str | None) -> float | None:
+    """Normalize a dynamic net energy price entity to ct/kWh.
+
+    Supported Home Assistant units are ct/kWh, EUR/kWh and €/kWh.
+    Unsupported or missing units return None so callers can fall back to the
+    manually configured tariff value.
+    """
+    if unit == "ct/kWh":
+        return value
+    if unit in {"EUR/kWh", "€/kWh"}:
+        return value * 100.0
+    return None
+
+
 def normalize_epex_price_eur_kwh(value: float, unit: str) -> float:
     """Normalize an EPEX price to EUR/kWh."""
     if unit == "EUR/kWh":
