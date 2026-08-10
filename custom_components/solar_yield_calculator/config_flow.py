@@ -13,6 +13,7 @@ from homeassistant.helpers import selector
 from .const import (
     CONF_BATTERY_OUTPUT_POWER,
     CONF_ENERGY_PRICE_NET,
+    CONF_ENERGY_PRICE_NET_ENTITY,
     CONF_EPEX_ADJUSTMENT,
     CONF_EPEX_PRICE,
     CONF_EPEX_UNIT,
@@ -78,6 +79,7 @@ class SolarYieldCalculatorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         mode=selector.SelectSelectorMode.DROPDOWN,
                     )
                 ),
+                vol.Optional(CONF_ENERGY_PRICE_NET_ENTITY): _entity_selector(),
                 vol.Required(CONF_ENERGY_PRICE_NET, default=DEFAULT_ENERGY_PRICE_NET): _number_selector(0, 100, 0.01),
                 vol.Required(CONF_NETWORK_FEE_NET, default=DEFAULT_NETWORK_FEE_NET): _number_selector(0, 100, 0.01),
                 vol.Required(CONF_TAXES_NET, default=DEFAULT_TAXES_NET): _number_selector(0, 100, 0.01),
@@ -104,6 +106,10 @@ class SolarYieldCalculatorOptionsFlow(config_entries.OptionsFlow):
     def _value(self, key: str, default: float) -> float:
         return float(self._entry.options.get(key, self._entry.data.get(key, default)))
 
+    def _entity(self, key: str) -> str | None:
+        value = self._entry.options.get(key, self._entry.data.get(key))
+        return str(value) if value else None
+
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
@@ -111,8 +117,16 @@ class SolarYieldCalculatorOptionsFlow(config_entries.OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
+        current_entity = self._entity(CONF_ENERGY_PRICE_NET_ENTITY)
+        entity_key = (
+            vol.Optional(CONF_ENERGY_PRICE_NET_ENTITY, default=current_entity)
+            if current_entity
+            else vol.Optional(CONF_ENERGY_PRICE_NET_ENTITY)
+        )
+
         schema = vol.Schema(
             {
+                entity_key: _entity_selector(),
                 vol.Required(CONF_ENERGY_PRICE_NET, default=self._value(CONF_ENERGY_PRICE_NET, DEFAULT_ENERGY_PRICE_NET)): _number_selector(0, 100, 0.01),
                 vol.Required(CONF_NETWORK_FEE_NET, default=self._value(CONF_NETWORK_FEE_NET, DEFAULT_NETWORK_FEE_NET)): _number_selector(0, 100, 0.01),
                 vol.Required(CONF_TAXES_NET, default=self._value(CONF_TAXES_NET, DEFAULT_TAXES_NET)): _number_selector(0, 100, 0.01),
