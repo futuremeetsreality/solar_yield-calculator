@@ -17,11 +17,13 @@ from homeassistant.util import dt as dt_util
 from .calculations import (
     effective_epex_price_eur_kwh,
     gross_grid_price_eur_kwh,
+    normalize_energy_price_net_ct,
     self_supply_energy_kwh,
 )
 from .const import (
     ACCOUNTING_TICK_SECONDS,
     CONF_ENERGY_PRICE_NET,
+    CONF_ENERGY_PRICE_NET_ENTITY,
     CONF_EPEX_ADJUSTMENT,
     CONF_EPEX_PRICE,
     CONF_EPEX_UNIT,
@@ -53,6 +55,7 @@ class LiveSnapshot:
     grid_import_kw: float = 0.0
     grid_export_kw: float = 0.0
     epex_eur_kwh: float = 0.0
+    energy_price_net_eur_kwh: float = 0.0
     grid_price_eur_kwh: float = 0.0
 
 
@@ -139,6 +142,10 @@ class SolarYieldAccounting:
                 CONF_EPEX_PRICE,
             )
         }
+        energy_price_entity = self._configured_entity(CONF_ENERGY_PRICE_NET_ENTITY)
+        if energy_price_entity:
+            source_entities.add(energy_price_entity)
+
         self._unsubs.append(
             async_track_state_change_event(
                 self.hass, source_entities, self._async_source_changed
@@ -340,12 +347,14 @@ class SolarYieldAccounting:
         )
 
     def _read_live_snapshot(self) -> LiveSnapshot:
+        energy_price_net_ct = self._energy_price_net_ct()
         return LiveSnapshot(
             house_kw=self._power_kw(self.entry.data[CONF_HOUSE_LOAD]),
             grid_import_kw=self._power_kw(self.entry.data[CONF_GRID_IMPORT_POWER]),
             grid_export_kw=self._power_kw(self.entry.data[CONF_GRID_EXPORT_POWER]),
             epex_eur_kwh=self._epex_price(),
-            grid_price_eur_kwh=self._grid_price(),
+            energy_price_net_eur_kwh=energy_price_net_ct / 100.0,
+            grid_price_eur_kwh=self._grid_price(energy_price_net_ct),
         )
 
     def _power_kw(self, entity_id: str) -> float:
@@ -397,9 +406,31 @@ class SolarYieldAccounting:
             return current - previous
         return max(current, 0.0)
 
-    def _grid_price(self) -> float:
+    def _energy_price_net_ct(self) -> float:
+        """Return effective net energy price in ct/kWh with manual fallback."""
+        entity_id = self._configured_entity(CONF_ENERGY_PRICE_NET_ENTITY)
+        if entity_id:
+            state = self.hass.states.get(entity_id)
+            value = self._state_float(state)
+            if value is not None and state is not None:
+                normalized = normalize_energy_price_net_ct(
+                    value, state.attributes.get("unit_of_measurement")
+                )
+                if normalized is not None:
+                    return normalized
+                _LOGGER.warning(
+                    "Unsupported net energy price unit %s for %s; using manual fallback",
+                    state.attributes.get("unit_of_measurement"),
+                    entity_id,
+                )
+
+        return self._option(CONF_ENERGY_PRICE_NET, DEFAULT_ENERGY_PRICE_NET)
+
+    def _grid_price(self, energy_price_net_ct: float | None = None) -> float:
+        if energy_price_net_ct is None:
+            energy_price_net_ct = self._energy_price_net_ct()
         return gross_grid_price_eur_kwh(
-            self._option(CONF_ENERGY_PRICE_NET, DEFAULT_ENERGY_PRICE_NET),
+            energy_price_net_ct,
             self._option(CONF_NETWORK_FEE_NET, DEFAULT_NETWORK_FEE_NET),
             self._option(CONF_TAXES_NET, DEFAULT_TAXES_NET),
             self._option(CONF_VAT, DEFAULT_VAT),
@@ -414,6 +445,10 @@ class SolarYieldAccounting:
             str(self.entry.data[CONF_EPEX_UNIT]),
             self._option(CONF_EPEX_ADJUSTMENT, DEFAULT_EPEX_ADJUSTMENT),
         )
+
+    def _configured_entity(self, key: str) -> str | None:
+        value = self.entry.options.get(key, self.entry.data.get(key))
+        return str(value) if value else None
 
     def _option(self, key: str, default: float) -> float:
         return float(self.entry.options.get(key, self.entry.data.get(key, default)))
