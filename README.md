@@ -2,9 +2,9 @@
 
 Custom Home Assistant integration for transparent PV yield and savings calculations.
 
-> Development status: **0.1.3-dev** — no public release yet.
+> Development status: **0.1.4-dev** — no public release yet.
 
-## Current 0.1.3 development scope
+## Current 0.1.4 development scope
 
 - UI based setup through Home Assistant Config Flow.
 - Source entity selection for house load, grid import/export, battery output, grid-to-battery energy and EPEX price.
@@ -16,8 +16,8 @@ Custom Home Assistant integration for transparent PV yield and savings calculati
 - 15-minute self-supplied house energy and avoided gross grid cost.
 - Grid-to-battery energy is separated from house grid import in the settlement calculation and its gross charging cost is deducted from total benefit.
 - Current hour, day, month and year monetary totals for export revenue, self-consumption saving, grid-to-battery cost and total benefit.
-- 0.1.3 fixes period totals that could remain zero immediately after upgrading from 0.1.1/0.1.2 even though a completed quarter already existed.
 - Completed quarters are deduplicated before being credited to period meters, preventing restart or reload double counting.
+- 0.1.4 normalizes all accounting timestamps to Home Assistant local time so UTC scheduler ticks cannot reset local hour/day/month/year totals.
 - Four-decimal monetary display precision for audit-friendly checking.
 - Interval and period timestamps exposed as entity attributes.
 - Stable technical entity IDs are migrated automatically from early development IDs.
@@ -32,13 +32,13 @@ The resulting interval benefit is:
 
 `export revenue + self-consumption saving - grid-to-battery cost`
 
-Completed 15-minute intervals are accumulated into the active calendar hour, day, month and year. Period sensors therefore represent completed settlement intervals only; the currently open quarter is added when it closes.
+Completed 15-minute intervals are accumulated into the active local calendar hour, day, month and year. Period sensors therefore represent completed settlement intervals only; the currently open quarter is added when it closes.
 
 ## Restart and upgrade behavior
 
 The active partial quarter and completed totals are persisted. On restart, accounting resumes from the current source states. Energy or power changes that happened while Home Assistant was offline are not guessed or backfilled, preventing false spikes.
 
-When upgrading from an early development version where the last completed quarter existed before period meters were initialized, 0.1.3 seeds only empty matching active periods from that persisted quarter. A per-period interval marker prevents the same quarter from being credited twice.
+When upgrading from an early development version where the last completed quarter existed before period meters were initialized, empty matching active periods can be seeded from that persisted quarter. A per-period interval marker prevents the same quarter from being credited twice.
 
 ## Next development steps
 
