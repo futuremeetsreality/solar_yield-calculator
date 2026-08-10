@@ -3,6 +3,7 @@
 from custom_components.solar_yield_calculator.calculations import (
     effective_epex_price_eur_kwh,
     gross_grid_price_eur_kwh,
+    normalize_energy_price_net_ct,
     self_supply_energy_kwh,
     self_supply_power_kw,
 )
@@ -10,6 +11,14 @@ from custom_components.solar_yield_calculator.calculations import (
 
 def test_gross_grid_price() -> None:
     assert gross_grid_price_eur_kwh(15, 10, 4, 20) == 0.348
+
+
+def test_net_energy_price_normalization() -> None:
+    assert normalize_energy_price_net_ct(15.75, "ct/kWh") == 15.75
+    assert normalize_energy_price_net_ct(0.1575, "EUR/kWh") == 15.75
+    assert normalize_energy_price_net_ct(0.1575, "€/kWh") == 15.75
+    assert normalize_energy_price_net_ct(15.75, None) is None
+    assert normalize_energy_price_net_ct(15.75, "EUR/MWh") is None
 
 
 def test_epex_normalization_and_adjustment() -> None:

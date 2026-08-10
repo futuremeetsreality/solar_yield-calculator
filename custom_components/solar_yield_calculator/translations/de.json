@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Solar Yield Calculator einrichten",
-        "description": "Wähle die Home-Assistant-Quellentitäten und trage die Tarifwerte für die Berechnung ein.",
+        "description": "Wähle die Home-Assistant-Quellentitäten und trage die Tarifwerte für die Berechnung ein. Eine Strompreis-Entität hat Vorrang vor dem manuellen Netto-Strompreis.",
         "data": {
           "house_load": "Hausverbrauch",
           "grid_import_power": "Netzbezug Leistung",
@@ -13,7 +13,8 @@
           "grid_to_battery_energy": "Netz zu Batterie Energie",
           "epex_price": "Aktueller EPEX-Preis",
           "epex_unit": "Einheit des EPEX-Preises",
-          "energy_price_net": "Strompreis netto (ct/kWh)",
+          "energy_price_net_entity": "Strompreis netto aus Entität (optional)",
+          "energy_price_net": "Strompreis netto manuell / Fallback (ct/kWh)",
           "network_fee_net": "Netzentgelt netto (ct/kWh)",
           "taxes_net": "Steuern und Abgaben netto (ct/kWh)",
           "vat": "Mehrwertsteuer (%)",
@@ -29,9 +30,10 @@
     "step": {
       "init": {
         "title": "Tarifeinstellungen",
-        "description": "Tarifwerte ändern, ohne die Integration neu einzurichten.",
+        "description": "Tarifwerte ändern. Ist eine Netto-Strompreis-Entität gewählt, wird sie automatisch verwendet; der manuelle Wert dient als Fallback.",
         "data": {
-          "energy_price_net": "Strompreis netto (ct/kWh)",
+          "energy_price_net_entity": "Strompreis netto aus Entität (optional)",
+          "energy_price_net": "Strompreis netto manuell / Fallback (ct/kWh)",
           "network_fee_net": "Netzentgelt netto (ct/kWh)",
           "taxes_net": "Steuern und Abgaben netto (ct/kWh)",
           "vat": "Mehrwertsteuer (%)",
@@ -44,6 +46,7 @@
     "sensor": {
       "grid_price_gross": {"name": "Bezugspreis brutto"},
       "effective_epex_price": {"name": "Effektiver EPEX-Preis"},
+      "effective_energy_price_net": {"name": "Effektiver Netto-Strompreis"},
       "self_supply_power": {"name": "Eigenversorgte Hausleistung"},
       "export_revenue_rate": {"name": "Exporterlös aktuell"},
       "self_consumption_saving_rate": {"name": "Eigenverbrauchsersparnis aktuell"},

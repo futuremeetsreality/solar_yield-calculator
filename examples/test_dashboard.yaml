@@ -1,0 +1,47 @@
+# Datei: examples/test_dashboard.yaml
+# Zeitstempel: 2026-08-10 09:57 +02:00
+# Solar Yield Calculator – Test Dashboard
+
+type: entities
+title: Solar Yield Calculator – Test
+show_header_toggle: false
+entities:
+  - entity: sensor.solar_yield_calculator_effective_epex_price
+    name: EPEX Preis effektiv
+  - entity: sensor.solar_yield_calculator_effective_energy_price_net
+    name: Strompreis netto effektiv
+  - entity: sensor.solar_yield_calculator_grid_price_gross
+    name: Strompreis brutto
+  - entity: sensor.solar_yield_calculator_self_supply_power
+    name: Eigenversorgung Haus
+  - type: divider
+  - entity: sensor.solar_yield_calculator_export_revenue_rate
+    name: Exporterlös aktuell
+  - entity: sensor.solar_yield_calculator_self_consumption_saving_rate
+    name: Eigenverbrauchsersparnis aktuell
+  - entity: sensor.solar_yield_calculator_total_benefit_rate
+    name: Gesamtnutzen aktuell
+  - type: divider
+  - entity: sensor.solar_yield_calculator_last_quarter_export_energy
+    name: Export letzte 15 min
+  - entity: sensor.solar_yield_calculator_last_quarter_export_revenue
+    name: Exporterlös letzte 15 min
+  - entity: sensor.solar_yield_calculator_last_quarter_self_supply_energy
+    name: Eigenversorgung letzte 15 min
+  - entity: sensor.solar_yield_calculator_last_quarter_self_consumption_saving
+    name: Ersparnis letzte 15 min
+  - entity: sensor.solar_yield_calculator_last_quarter_grid_to_battery_energy
+    name: Netz → Batterie letzte 15 min
+  - entity: sensor.solar_yield_calculator_last_quarter_grid_to_battery_cost
+    name: Netzladekosten letzte 15 min
+  - entity: sensor.solar_yield_calculator_last_quarter_total_benefit
+    name: Gesamtnutzen letzte 15 min
+  - type: divider
+  - entity: sensor.solar_yield_calculator_hour_total_benefit
+    name: Gesamtnutzen Stunde
+  - entity: sensor.solar_yield_calculator_day_total_benefit
+    name: Gesamtnutzen heute
+  - entity: sensor.solar_yield_calculator_month_total_benefit
+    name: Gesamtnutzen Monat
+  - entity: sensor.solar_yield_calculator_year_total_benefit
+    name: Gesamtnutzen Jahr
