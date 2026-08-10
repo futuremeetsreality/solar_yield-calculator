@@ -1,7 +1,7 @@
 """Constants for Solar Yield Calculator."""
 
 DOMAIN = "solar_yield_calculator"
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 
 CONF_HOUSE_LOAD = "house_load"
 CONF_GRID_IMPORT_POWER = "grid_import_power"

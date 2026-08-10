@@ -82,6 +82,7 @@ class PeriodTotals:
     self_consumption_saving_eur: float = 0.0
     grid_to_battery_cost_eur: float = 0.0
     total_benefit_eur: float = 0.0
+    last_interval_start: str = ""
 
 
 class SolarYieldAccounting:
@@ -123,6 +124,7 @@ class SolarYieldAccounting:
             self.current = self._new_quarter(current_start)
 
         self._roll_periods(now)
+        self._bootstrap_periods_from_last(now)
         self._last_update = now
         self._last_grid_to_battery_raw = self._grid_to_battery_value()
         self.live = self._read_live_snapshot()
@@ -254,15 +256,73 @@ class SolarYieldAccounting:
     def _add_quarter_to_periods(
         self, quarter: QuarterTotals, quarter_start: datetime
     ) -> None:
+        """Credit one completed quarter exactly once to each matching period."""
+        if not quarter.start:
+            return
+
         for period in PERIODS:
             expected = self._period_start(period, quarter_start)
             if self.periods[period].start != expected.isoformat():
                 self.periods[period] = PeriodTotals(start=expected.isoformat())
+
             totals = self.periods[period]
+            if totals.last_interval_start == quarter.start:
+                continue
+
             totals.export_revenue_eur += quarter.export_revenue_eur
             totals.self_consumption_saving_eur += quarter.self_consumption_saving_eur
             totals.grid_to_battery_cost_eur += quarter.grid_to_battery_cost_eur
             totals.total_benefit_eur += quarter.total_benefit_eur
+            totals.last_interval_start = quarter.start
+
+    def _bootstrap_periods_from_last(self, now: datetime) -> None:
+        """Seed empty 0.1.2 period meters from the persisted last quarter once.
+
+        Version 0.1.2 introduced period meters after quarter persistence already
+        existed. Immediately after upgrading, the last-quarter sensors could
+        therefore contain a valid settlement while all period meters were zero.
+        Only empty active periods are seeded, so existing non-zero totals are
+        never duplicated.
+        """
+        if not self.last.start:
+            return
+
+        quarter_start = dt_util.parse_datetime(self.last.start)
+        if quarter_start is None:
+            return
+
+        for period in PERIODS:
+            quarter_period_start = self._period_start(period, quarter_start)
+            active_period_start = self._period_start(period, now)
+            if quarter_period_start != active_period_start:
+                continue
+
+            totals = self.periods[period]
+            if totals.start != active_period_start.isoformat():
+                continue
+            if totals.last_interval_start == self.last.start:
+                continue
+            if not self._period_is_empty(totals):
+                continue
+
+            totals.export_revenue_eur = self.last.export_revenue_eur
+            totals.self_consumption_saving_eur = self.last.self_consumption_saving_eur
+            totals.grid_to_battery_cost_eur = self.last.grid_to_battery_cost_eur
+            totals.total_benefit_eur = self.last.total_benefit_eur
+            totals.last_interval_start = self.last.start
+
+    @staticmethod
+    def _period_is_empty(totals: PeriodTotals) -> bool:
+        """Return whether a period has no credited monetary settlement yet."""
+        return all(
+            abs(value) < 1e-12
+            for value in (
+                totals.export_revenue_eur,
+                totals.self_consumption_saving_eur,
+                totals.grid_to_battery_cost_eur,
+                totals.total_benefit_eur,
+            )
+        )
 
     def _roll_periods(self, now: datetime) -> None:
         """Reset active period meters at their calendar boundaries."""
